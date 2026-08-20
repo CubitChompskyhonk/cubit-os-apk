@@ -435,6 +435,34 @@
   <button class="mobile-toggle" onclick="toggleSide()">💬</button>
 
   <script>
+
+    function forceEnterOffice() {
+      var ov = document.getElementById('onboarding');
+      if (ov) {
+        ov.classList.add('hidden');
+        ov.style.display = 'none';
+        ov.style.pointerEvents = 'none';
+        ov.setAttribute('aria-hidden', 'true');
+        try { ov.remove(); } catch (e) {}
+      }
+      try { localStorage.setItem('cubit_onboarded', '1'); } catch (e) {}
+      var input = document.getElementById('cmd');
+      if (input) {
+        input.placeholder = "Alex, give me the company pulse";
+        try { input.focus(); } catch (e) {}
+      }
+      var d = document.getElementById('dialogue');
+      if (d) {
+        var div = document.createElement('div');
+        div.className = 'msg system';
+        div.innerHTML = '<div class="who">System</div><div class="text">You\'re in. The company is already running. Give Alex a directive — or click anyone.</div>';
+        d.appendChild(div);
+        d.scrollTop = d.scrollHeight;
+      }
+    }
+    function closeOnboardingAndSuggest() { forceEnterOffice(); }
+    function closeOnboarding() { forceEnterOffice(); }
+
     // Stripe Payment Links (live)
     const STRIPE_FULL = "https://buy.stripe.com/6oU6oG1Z9dx36Fi69b6kg02";
     const STRIPE_TEST = "https://buy.stripe.com/14AdR8dHRcsZ3t69ln6kg01";
@@ -605,7 +633,30 @@
     function toggleSide() {
       document.getElementById('side').classList.toggle('mobile-open');
     }
-  </script>
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        if (localStorage.getItem('cubit_onboarded')) {
+          forceEnterOffice();
+        }
+      } catch (e) {}
+      var btn = document.querySelector('#onboarding .primary');
+      if (btn) {
+        btn.addEventListener('click', function(ev) {
+          ev.preventDefault();
+          forceEnterOffice();
+        });
+      }
+      var btn2 = document.querySelector('#onboarding .secondary');
+      if (btn2) {
+        btn2.addEventListener('click', function(ev) {
+          ev.preventDefault();
+          forceEnterOffice();
+        });
+      }
+    });
+
+</script>
 
   <!-- Install banner -->
   <div id="install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#151a28;border-top:1px solid #2a3142;padding:14px 16px;z-index:50;align-items:center;justify-content:space-between;gap:12px;">

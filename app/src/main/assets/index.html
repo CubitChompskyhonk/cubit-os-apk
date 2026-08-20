@@ -298,6 +298,7 @@
   </style>
 </head>
 <body>
+  <div id="founder-banner" style="display:none;background:#0d2818;color:#3dd68c;font-size:11px;text-align:center;padding:6px 10px;letter-spacing:0.04em;">FOUNDER CHANNEL · PAY WAIVED · INTERNAL OPS / PROOF OF CONCEPT</div>
   <!-- Onboarding -->
   <div class="overlay" id="onboarding">
     <div class="modal">
@@ -436,6 +437,19 @@
 
   <script>
 
+    // FOUNDER CHANNEL — all pay requirements waived (customer #1 / internal ops)
+    (function(){
+      var p = new URLSearchParams(location.search);
+      if (p.get('access') === 'founder' || p.get('key') === 'customer1') {
+        try { localStorage.setItem('cubit_founder', '1'); } catch(e) {}
+      }
+      window.CUBIT_FOUNDER = false;
+      try { window.CUBIT_FOUNDER = localStorage.getItem('cubit_founder') === '1' || p.get('access') === 'founder'; } catch(e) {
+        window.CUBIT_FOUNDER = p.get('access') === 'founder';
+      }
+    })();
+
+
     function forceEnterOffice() {
       var ov = document.getElementById('onboarding');
       if (ov) {
@@ -553,7 +567,11 @@
     }
 
     function buyFull() {
-      window.open(STRIPE_FULL, '_blank');
+      if (window.CUBIT_FOUNDER) {
+        alert('Founder channel: all pay requirements waived. You already have full access.');
+        return;
+      }
+      window.open(typeof STRIPE_FULL !== 'undefined' ? STRIPE_FULL : 'https://buy.stripe.com/eVqcN4dHRboV7Jm5576kg03', '_blank');
     }
 
     // Desk selection
@@ -656,6 +674,13 @@
       }
     });
 
+
+    if (window.CUBIT_FOUNDER) {
+      var fb = document.getElementById('founder-banner');
+      if (fb) fb.style.display = 'block';
+      try { localStorage.setItem('cubit_onboarded', '1'); } catch(e) {}
+    }
+
 </script>
 
   <!-- Install banner -->
@@ -697,6 +722,7 @@
       banner.style.display = 'none';
     }
   </script>
+<div id="build-stamp" style="position:fixed;bottom:4px;left:8px;font-size:9px;color:#5a6578;z-index:60;pointer-events:none;">v0.1.1</div>
 </body>
 
 </html>

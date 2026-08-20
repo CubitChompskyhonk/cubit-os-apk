@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0c10" />
+  <meta name="description" content="Cubit Head Offices — Interactive Virtual Company Interface. Direct a team of AI employees in a beautiful virtual office." />
+  <title>Cubit Head Offices</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --panel: #11141b;
+      --card: #161b24;
+      --card-hover: #1c2230;
+      --border: #2a3142;
+      --text: #f0f2f7;
+      --muted: #8b93a7;
+      --accent: #5b8cff;
+      --accent-glow: rgba(91,140,255,0.25);
+      --green: #3dd68c;
+      --yellow: #f5c542;
+      --purple: #a78bfa;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(180deg, #13171f 0%, var(--panel) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 11px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+    .logo { display: flex; align-items: center; gap: 11px; }
+    .logo-mark {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    header h1 { font-size: 15px; font-weight: 650; letter-spacing: 0.2px; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .status-pills { display: flex; gap: 10px; font-size: 12px; color: var(--muted); }
+    .status-pills strong { color: var(--green); font-weight: 600; }
+    .buy-btn {
+      background: linear-gradient(135deg, var(--accent), #7b6cff);
+      color: white; border: none; border-radius: 8px;
+      padding: 7px 14px; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+    .buy-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    /* Main */
+    .main { flex: 1; display: grid; grid-template-columns: 1fr 370px; overflow: hidden; }
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; }
+      .side { display: none; }
+      .side.mobile-open { display: flex; position: absolute; inset: 0; z-index: 30; }
+      .status-pills { display: none; }
+    }
+
+    /* Office */
+    .office {
+      padding: 22px;
+      overflow-y: auto;
+      background:
+        radial-gradient(ellipse at 10% 15%, #141922 0%, transparent 45%),
+        radial-gradient(ellipse at 90% 85%, #10141c 0%, transparent 40%),
+        var(--bg);
+    }
+    .wing { margin-bottom: 28px; }
+    .wing-title {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 1.6px;
+      color: var(--muted); margin-bottom: 13px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .wing-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    .desks { display: flex; flex-wrap: wrap; gap: 13px; }
+    .desk {
+      width: 172px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px 14px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      position: relative;
+      user-select: none;
+    }
+    .desk:hover {
+      border-color: #3a455c;
+      background: var(--card-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+    }
+    .desk.selected {
+      border-color: var(--accent);
+      background: #1a2233;
+      box-shadow: 0 0 0 1px var(--accent), 0 8px 28px var(--accent-glow);
+    }
+    .desk .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(145deg, #2a3548, #1a2230);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; margin-bottom: 11px;
+      color: var(--accent);
+      border: 1px solid #2f3a4d;
+    }
+    .desk .id { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+    .desk .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .desk .role { font-size: 11.5px; color: var(--muted); line-height: 1.3; }
+    .desk .status-dot {
+      position: absolute; top: 15px; right: 15px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 8px var(--green);
+    }
+
+    /* Side Panel */
+    .side {
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+    }
+    .side-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px; font-weight: 600;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .dialogue {
+      flex: 1; overflow-y: auto; padding: 16px;
+      font-size: 13.5px; line-height: 1.55;
+    }
+    .msg { margin-bottom: 16px; animation: fadeIn 0.28s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .msg .who { font-weight: 600; font-size: 12px; margin-bottom: 4px; }
+    .msg.user .who { color: var(--yellow); }
+    .msg.employee .who { color: var(--accent); }
+    .msg.system .who { color: var(--muted); }
+
+    .command-area {
+      border-top: 1px solid var(--border);
+      background: #0d1016;
+      padding: 12px 14px;
+    }
+    .hint { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .command-bar { display: flex; gap: 8px; }
+    .command-bar input {
+      flex: 1; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 9px;
+      padding: 11px 13px; color: var(--text); font-size: 13.5px; outline: none;
+    }
+    .command-bar input:focus { border-color: var(--accent); }
+    .command-bar button {
+      background: var(--accent); color: white; border: none;
+      border-radius: 9px; padding: 0 18px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Product CTA strip */
+    .cta-strip {
+      background: linear-gradient(90deg, #151a28, #1a1530);
+      border-top: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-shrink: 0;
+    }
+    .cta-text { font-size: 12.5px; color: var(--muted); }
+    .cta-text strong { color: var(--text); }
+
+    /* Onboarding modal */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(5,7,12,0.82);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; backdrop-filter: blur(6px);
+    }
+    .overlay.hidden { display: none; }
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px 26px;
+      max-width: 420px; width: 90%;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    }
+    .modal h2 { font-size: 20px; margin-bottom: 10px; }
+    .modal p { font-size: 14px; color: var(--muted); line-height: 1.55; margin-bottom: 18px; }
+    .modal .actions { display: flex; gap: 10px; }
+    .modal button {
+      flex: 1; padding: 11px; border-radius: 9px; border: none;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .modal .primary { background: var(--accent); color: white; }
+    .modal .secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+
+    .mobile-toggle {
+      display: none; position: fixed; bottom: 22px; right: 18px;
+      width: 54px; height: 54px; border-radius: 50%;
+      background: var(--accent); border: none; color: white; font-size: 22px;
+      box-shadow: 0 6px 24px var(--accent-glow); z-index: 40; cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+    }
+  
+    /* Magic moment & interaction polish */
+    .overlay {
+      transition: opacity 0.35s ease, backdrop-filter 0.35s ease;
+    }
+    .overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .modal {
+      transform: translateY(12px) scale(0.98);
+      opacity: 0;
+      animation: modalIn 0.4s cubic-bezier(0.2, 0.9, 0.3, 1) 0.05s forwards;
+    }
+    @keyframes modalIn {
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .desk {
+      transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .desk.selected .avatar {
+      box-shadow: 0 0 0 2px var(--accent), 0 0 16px var(--accent-glow);
+      transition: box-shadow 0.25s ease;
+    }
+    .msg {
+      animation: msgIn 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .status-dot {
+      animation: pulseDot 2.4s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.92); }
+    }
+    #install-banner {
+      animation: slideUp 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .command-bar input:focus {
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .buy-btn, .command-bar button, .modal button {
+      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    }
+    .buy-btn:active, .command-bar button:active, .modal button:active {
+      transform: scale(0.97);
+    }
+
+  
+    .desk {
+      animation: deskIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+    .wing:nth-child(1) .desk:nth-child(1) { animation-delay: 0.05s; }
+    .wing:nth-child(1) .desk:nth-child(2) { animation-delay: 0.10s; }
+    .wing:nth-child(2) .desk:nth-child(1) { animation-delay: 0.15s; }
+    .wing:nth-child(2) .desk:nth-child(2) { animation-delay: 0.20s; }
+    .wing:nth-child(3) .desk:nth-child(1) { animation-delay: 0.25s; }
+    .wing:nth-child(4) .desk:nth-child(1) { animation-delay: 0.30s; }
+    .wing:nth-child(4) .desk:nth-child(2) { animation-delay: 0.35s; }
+    @keyframes deskIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Onboarding -->
+  <div class="overlay" id="onboarding">
+    <div class="modal">
+      <h2>Your Head Offices are ready</h2>
+      <p style="margin-bottom:12px;">
+        This is your company.<br>
+        Click anyone — or just tell them what to do.
+      </p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">
+        Try: <strong style="color:var(--accent)">Alex, give me the company pulse</strong>
+      </p>
+      <div class="actions">
+        <button class="primary" onclick="closeOnboardingAndSuggest()">I'm in</button>
+        <button class="secondary" onclick="buyFull()">Get Cubit OS — $9.99</button>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark">C</div>
+      <h1>CUBIT HEAD OFFICES</h1>
+    </div>
+    <div class="header-right">
+      <div class="status-pills">
+        <div>Runway <strong>$3.57</strong></div>
+        <div>Staff <strong>7</strong></div>
+      </div>
+      <button class="buy-btn" onclick="buyFull()">Get Full Access — $9.99</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="office" id="office">
+      <div class="wing">
+        <div class="wing-title">Executive Wing</div>
+        <div class="desks">
+          <div class="desk" data-id="CSI-001">
+            <div class="status-dot"></div>
+            <div class="avatar">S</div>
+            <div class="id">CSI-001</div>
+            <div class="name">Secretary</div>
+            <div class="role">Runtime Bridge</div>
+          </div>
+          <div class="desk" data-id="CSI-002">
+            <div class="status-dot"></div>
+            <div class="avatar">AR</div>
+            <div class="id">CSI-002</div>
+            <div class="name">Alex Rivera</div>
+            <div class="role">Chief of Staff</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wing">
+        <div class="wing-title">Finance & Compliance</div>
+        <div class="desks">
+          <div class="desk" data-id="CSI-003">
+            <div class="status-dot"></div>
+            <div class="avatar">JH</div>
+            <div class="id">CSI-003</div>
+            <div class="name">Jordan Hale</div>
+            <div class="role">Finance Officer</div>
+          </div>
+          <div class="desk" data-id="CSI-004">
+            <div class="status-dot"></div>
+            <div class="avatar">PS</div>
+            <div class="id">CSI-004</div>
+            <div class="name">Priya Singh</div>
+            <div class="role">Tax & Compliance</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wing">
+        <div class="wing-title">Operations</div>
+        <div class="desks">
+          <div class="desk" data-id="CSI-005">
+            <div class="status-dot"></div>
+            <div class="avatar">SO</div>
+            <div class="id">CSI-005</div>
+            <div class="name">Sam Ortega</div>
+            <div class="role">Procurement</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wing">
+        <div class="wing-title">Knowledge & Engineering</div>
+        <div class="desks">
+          <div class="desk" data-id="CSI-006">
+            <div class="status-dot"></div>
+            <div class="avatar">TK</div>
+            <div class="id">CSI-006</div>
+            <div class="name">Taylor Kim</div>
+            <div class="role">Knowledge Manager</div>
+          </div>
+          <div class="desk" data-id="CSI-007">
+            <div class="status-dot"></div>
+            <div class="avatar">ME</div>
+            <div class="id">CSI-007</div>
+            <div class="name">Morgan Ellis</div>
+            <div class="role">Software Engineer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side" id="side">
+      <div class="side-header">
+        <span>Dialogue</span>
+        <span style="font-size:11px;color:var(--muted)" id="selected-label">Select an employee</span>
+      </div>
+      <div class="dialogue" id="dialogue">
+        <div class="msg system">
+          <div class="who">System</div>
+          <div class="text">Head Offices online. Click any employee or type a directive below.</div>
+        </div>
+      </div>
+      <div class="command-area">
+        <div class="hint">Examples: “Alex, company pulse” · “Jordan, runway” · “Secretary, any barriers?”</div>
+        <div class="command-bar">
+          <input type="text" id="cmd" placeholder="Type a directive..." autocomplete="off" />
+          <button onclick="sendCommand()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-strip">
+    <div class="cta-text">This is a <strong>live demo</strong> of Cubit Head Offices. Unlock the full operating system + interface.</div>
+    <button class="buy-btn" onclick="buyFull()">Buy Cubit OS — $9.99</button>
+  </div>
+
+  <button class="mobile-toggle" onclick="toggleSide()">💬</button>
+
+  <script>
+    // Stripe Payment Links (live)
+    const STRIPE_FULL = "https://buy.stripe.com/6oU6oG1Z9dx36Fi69b6kg02";
+    const STRIPE_TEST = "https://buy.stripe.com/14AdR8dHRcsZ3t69ln6kg01";
+
+    const employees = {
+      "CSI-001": {
+        name: "Secretary",
+        responses: {
+          default: [
+            "Boundary is clear. No external actions pending approval.",
+            "I am monitoring all exits from the Virtual Runtime Environment.",
+            "Ready to surface any permission requirements the moment they appear."
+          ],
+          barrier: ["Permission gate is active. I will flag anything that leaves Head Offices."]
+        }
+      },
+      "CSI-002": {
+        name: "Alex Rivera",
+        responses: {
+          default: [
+            "Company pulse: Cubit OS is live. Runway at $3.57. Focus remains on first revenue.",
+            "High agency mode engaged. Ready for your next directive.",
+            "The interface is polished and payment links are integrated. We are product-ready."
+          ],
+          pulse: ["All systems nominal. Product live, Stripe live, milestone policy locked."],
+          next: ["Next high-leverage move is controlled outreach to first customers."]
+        }
+      },
+      "CSI-003": {
+        name: "Jordan Hale",
+        responses: {
+          default: [
+            "Runway stands at $3.57. No further API spend until first revenue.",
+            "Both the $9.99 Cubit OS link and the 99¢ test product are live.",
+            "Books are clean. Awaiting the first sale."
+          ],
+          runway: ["Confirmed: $3.57 remaining. Milestone policy is active."]
+        }
+      },
+      "CSI-004": {
+        name: "Priya Singh",
+        responses: {
+          default: [
+            "No compliance blockers. Structure is clean for the first sales.",
+            "Once revenue arrives I will map the lightest reporting path."
+          ]
+        }
+      },
+      "CSI-005": {
+        name: "Sam Ortega",
+        responses: {
+          default: [
+            "No purchases required. We continue at near-zero cost.",
+            "Standing by until revenue justifies any new spend."
+          ]
+        }
+      },
+      "CSI-006": {
+        name: "Taylor Kim",
+        responses: {
+          default: [
+            "Knowledge layer is ready. Delivery package can be assembled on first sale.",
+            "Single source of truth is maintained across the system."
+          ]
+        }
+      },
+      "CSI-007": {
+        name: "Morgan Ellis",
+        responses: {
+          default: [
+            "UI is polished and Stripe CTAs are integrated. Technical side is stable.",
+            "This version is marketplace-ready as a demo + upgrade path."
+          ],
+          ui: ["Current build includes onboarding, product CTAs, and improved interaction."]
+        }
+      }
+    };
+
+    let selectedId = null;
+
+    // Onboarding
+    function closeOnboarding() {
+      var ov = document.getElementById('onboarding'); ov.classList.add('hidden'); setTimeout(function(){ ov.style.display='none'; }, 350);
+      localStorage.setItem('cubit_onboarded', '1');
+    }
+    if (localStorage.getItem('cubit_onboarded')) {
+      var ov = document.getElementById('onboarding'); ov.classList.add('hidden'); setTimeout(function(){ ov.style.display='none'; }, 350);
+    }
+
+    function buyFull() {
+      window.open(STRIPE_FULL, '_blank');
+    }
+
+    // Desk selection
+    document.querySelectorAll('.desk').forEach(desk => {
+      desk.addEventListener('click', () => {
+        document.querySelectorAll('.desk').forEach(d => d.classList.remove('selected'));
+        desk.classList.add('selected');
+        selectedId = desk.dataset.id;
+        const emp = employees[selectedId];
+        document.getElementById('selected-label').textContent = emp.name;
+        document.getElementById('cmd').placeholder = `Directive for ${emp.name}...`;
+        speak(selectedId, 'default');
+        document.getElementById('cmd').focus();
+      });
+    });
+
+    function addMessage(who, text, type = 'employee') {
+      const d = document.getElementById('dialogue');
+      const div = document.createElement('div');
+      div.className = `msg ${type}`;
+      div.innerHTML = `<div class="who">${who}</div><div class="text">${text}</div>`;
+      d.appendChild(div);
+      d.scrollTop = d.scrollHeight;
+    }
+
+    function speak(id, cat = 'default') {
+      const emp = employees[id];
+      if (!emp) return;
+      const pool = emp.responses[cat] || emp.responses.default;
+      addMessage(emp.name, pool[Math.floor(Math.random() * pool.length)]);
+    }
+
+    function routeCommand(text) {
+      const lower = text.toLowerCase();
+      let target = selectedId;
+
+      if (lower.includes('secretary') || lower.includes('csi-001')) target = 'CSI-001';
+      else if (lower.includes('alex') || lower.includes('chief') || lower.includes('csi-002')) target = 'CSI-002';
+      else if (lower.includes('jordan') || lower.includes('finance') || lower.includes('csi-003')) target = 'CSI-003';
+      else if (lower.includes('priya') || lower.includes('tax') || lower.includes('csi-004')) target = 'CSI-004';
+      else if (lower.includes('sam') || lower.includes('procurement') || lower.includes('csi-005')) target = 'CSI-005';
+      else if (lower.includes('taylor') || lower.includes('knowledge') || lower.includes('csi-006')) target = 'CSI-006';
+      else if (lower.includes('morgan') || lower.includes('engineer') || lower.includes('csi-007')) target = 'CSI-007';
+
+      let cat = 'default';
+      if (lower.includes('pulse') || lower.includes('status')) cat = 'pulse';
+      if (lower.includes('runway') || lower.includes('money')) cat = 'runway';
+      if (lower.includes('barrier') || lower.includes('permission')) cat = 'barrier';
+      if (lower.includes('next')) cat = 'next';
+      if (lower.includes('ui') || lower.includes('interface')) cat = 'ui';
+
+      if (target && employees[target]) {
+        document.querySelectorAll('.desk').forEach(d => d.classList.remove('selected'));
+        const desk = document.querySelector(`.desk[data-id="${target}"]`);
+        if (desk) desk.classList.add('selected');
+        selectedId = target;
+        document.getElementById('selected-label').textContent = employees[target].name;
+        setTimeout(() => speak(target, cat), 320);
+      } else {
+        setTimeout(() => addMessage("System", "No clear employee matched. Click a desk or use a name.", "system"), 280);
+      }
+    }
+
+    function sendCommand() {
+      const input = document.getElementById('cmd');
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage("You", text, "user");
+      input.value = '';
+      routeCommand(text);
+    }
+
+    document.getElementById('cmd').addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendCommand();
+    });
+
+    function toggleSide() {
+      document.getElementById('side').classList.toggle('mobile-open');
+    }
+  </script>
+
+  <!-- Install banner -->
+  <div id="install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#151a28;border-top:1px solid #2a3142;padding:14px 16px;z-index:50;align-items:center;justify-content:space-between;gap:12px;">
+    <div style="font-size:13px;color:#eef1f7;">Install Cubit HQ for one-tap access</div>
+    <div style="display:flex;gap:8px;">
+      <button id="install-dismiss" style="background:transparent;border:1px solid #2a3142;color:#8b93a7;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;">Not now</button>
+      <button id="install-btn" style="background:#5b8cff;border:none;color:white;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;">Install</button>
+    </div>
+  </div>
+  <script>
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(function(){});
+    }
+
+    // Install prompt
+    let deferredPrompt = null;
+    const banner = document.getElementById('install-banner');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!window.matchMedia('(display-mode: standalone)').matches) {
+        banner.style.display = 'flex';
+      }
+    });
+    document.getElementById('install-btn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      banner.style.display = 'none';
+    });
+    document.getElementById('install-dismiss').addEventListener('click', () => {
+      banner.style.display = 'none';
+    });
+    // Hide banner if already standalone
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      banner.style.display = 'none';
+    }
+  </script>
+</body>
+
+</html>

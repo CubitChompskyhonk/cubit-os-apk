@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0a0c10" />
   <meta name="description" content="Cubit Head Offices — Interactive Virtual Company Interface. Direct a team of AI employees in a beautiful virtual office." />
   <title>Cubit Head Offices</title>
@@ -293,6 +293,125 @@
     @keyframes deskIn {
       from { opacity: 0; transform: translateY(14px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+  
+    /* === OS UI v0.2 — mobile layout pass === */
+    html, body { height: 100%; }
+    body {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100dvh !important;
+      overflow: hidden !important;
+      max-width: 100% !important;
+    }
+    #founder-banner { flex-shrink: 0; }
+    .top {
+      flex-shrink: 0 !important;
+      padding: 8px 12px !important;
+    }
+    .cta-strip {
+      flex-shrink: 0 !important;
+      padding: 6px 10px !important;
+      gap: 6px !important;
+      flex-wrap: wrap !important;
+    }
+    .cta-strip button, .cta-strip a {
+      padding: 8px 10px !important;
+      font-size: 11px !important;
+    }
+    .grid {
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      gap: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+    .desk {
+      flex: 0 0 auto !important;
+      max-height: 34dvh !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      padding: 8px 10px !important;
+      border-bottom: 1px solid var(--line, #2a3142) !important;
+    }
+    .desk-inner, .employees, .emp-row, .row-emps {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      gap: 8px !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: 4px !important;
+    }
+    .emp, .employee, [data-emp] {
+      flex: 0 0 auto !important;
+      min-width: 72px !important;
+      max-width: 88px !important;
+      padding: 8px 6px !important;
+      font-size: 11px !important;
+      text-align: center !important;
+    }
+    .panel, .right, .dialogue-panel {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      padding: 0 !important;
+    }
+    #dialogue, .dialogue, .log {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding: 10px 12px !important;
+      font-size: 14px !important;
+      line-height: 1.45 !important;
+    }
+    .composer, .command-bar, .input-row {
+      flex-shrink: 0 !important;
+      display: flex !important;
+      gap: 8px !important;
+      padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) !important;
+      border-top: 1px solid var(--line, #2a3142) !important;
+      background: #0a0c10 !important;
+      align-items: center !important;
+    }
+    #cmd, input#cmd, .composer input {
+      flex: 1 1 auto !important;
+      min-height: 44px !important;
+      font-size: 16px !important;
+      padding: 10px 12px !important;
+      border-radius: 10px !important;
+    }
+    .composer button, button#send, .send-btn {
+      min-height: 44px !important;
+      min-width: 52px !important;
+      padding: 0 14px !important;
+      border-radius: 10px !important;
+      flex-shrink: 0 !important;
+    }
+    #onboarding {
+      z-index: 100 !important;
+    }
+    #build-stamp { opacity: 0.5; }
+    @media (min-width: 800px) {
+      .grid {
+        flex-direction: row !important;
+      }
+      .desk {
+        max-height: none !important;
+        width: 280px !important;
+        flex: 0 0 280px !important;
+        overflow-y: auto !important;
+        border-bottom: none !important;
+        border-right: 1px solid var(--line, #2a3142) !important;
+      }
+      .desk-inner, .employees, .emp-row, .row-emps {
+        flex-wrap: wrap !important;
+      }
     }
 
   </style>
@@ -722,7 +841,7 @@
       banner.style.display = 'none';
     }
   </script>
-<div id="build-stamp" style="position:fixed;bottom:4px;left:8px;font-size:9px;color:#5a6578;z-index:60;pointer-events:none;">v0.1.1</div>
+<div id="build-stamp" style="position:fixed;bottom:4px;left:8px;font-size:9px;color:#5a6578;z-index:60;pointer-events:none;">v0.2.0</div>
 </body>
 
 </html>
